@@ -14,7 +14,8 @@
 
       <section class="stage" id="stage" aria-live="polite">
         <div class="slide-card is-loading" id="slideCard">
-          <img id="slideImage" alt="발표 슬라이드" draggable="false" />
+          <img class="slide-image is-active" id="slideImageA" alt="발표 슬라이드" draggable="false" />
+          <img class="slide-image" id="slideImageB" alt="" draggable="false" />
         </div>
       </section>
 
@@ -39,13 +40,22 @@
           <span>/</span>
           <span id="totalSlides">10</span>
         </div>
-        <div class="progress-track" aria-hidden="true">
+        <div
+          class="progress-track"
+          id="progressTrack"
+          role="slider"
+          aria-label="슬라이드 위치"
+          aria-valuemin="1"
+          aria-valuemax="10"
+          aria-valuenow="1"
+          tabindex="0"
+        >
           <div class="progress-fill" id="progressFill"></div>
         </div>
         <div class="hint">← → / Space</div>
       </footer>
     </main>
 
-    <script src="./app.js"></script>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
