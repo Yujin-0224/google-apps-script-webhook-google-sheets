@@ -1,0 +1,55 @@
+{
+  "slideCount": 10,
+  "slides": [
+    {
+      "src": "assets/slides/slide-01.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-02.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-03.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-04.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-05.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-06.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-07.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-08.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-09.png",
+      "width": 1800,
+      "height": 1013
+    },
+    {
+      "src": "assets/slides/slide-10.png",
+      "width": 1800,
+      "height": 1013
+    }
+  ]
+}

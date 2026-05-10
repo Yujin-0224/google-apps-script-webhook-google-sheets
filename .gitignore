@@ -1,0 +1,20 @@
+# Local scratch/output
+scratch/
+output/
+public/
+src/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local environment
+.env
+.env.*
+node_modules/
+
+# Never commit bot tokens or local credential dumps
+*token*
+*secret*
+credentials.json

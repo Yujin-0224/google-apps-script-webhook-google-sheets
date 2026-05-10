@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>텔레그램 입고 자동화 시스템</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="deck-shell" aria-label="텔레그램 입고 자동화 시스템 발표 슬라이드">
+      <div class="ambient ambient-a"></div>
+      <div class="ambient ambient-b"></div>
+      <div class="scanline"></div>
+
+      <section class="stage" id="stage" aria-live="polite">
+        <div class="slide-card is-loading" id="slideCard">
+          <img id="slideImage" alt="발표 슬라이드" draggable="false" />
+        </div>
+      </section>
+
+      <button class="nav-button nav-prev" id="prevButton" type="button" aria-label="이전 슬라이드">
+        <span aria-hidden="true">‹</span>
+      </button>
+      <button class="nav-button nav-next" id="nextButton" type="button" aria-label="다음 슬라이드">
+        <span aria-hidden="true">›</span>
+      </button>
+
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <span>Spreadsheet Automation</span>
+        </div>
+        <button class="ghost-button" id="fullscreenButton" type="button">전체화면</button>
+      </header>
+
+      <footer class="controlbar">
+        <div class="counter">
+          <strong id="currentSlide">01</strong>
+          <span>/</span>
+          <span id="totalSlides">10</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="hint">← → / Space</div>
+      </footer>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
