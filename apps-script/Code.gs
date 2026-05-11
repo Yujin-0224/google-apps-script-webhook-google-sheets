@@ -14,6 +14,8 @@ const TIME_FORMAT = 'HH:mm';
 const PICKLIST_MAX_ROWS = 1000;
 const HEADER_SCAN_ROWS = 10;
 const DASHBOARD_REFRESH_INTERVAL_MS = 30000;
+const QUICK_LIVE_ALERT_AFTER_MINUTES = 10;
+const QUICK_LIVE_ALERT_COLOR = '#f4cccc';
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -75,6 +77,8 @@ function onOpen() {
     .addItem('선택한 검수 적용', 'applySelectedReviewRows')
     .addItem('검수 드롭다운 새로고침', 'setupReviewSheet')
     .addItem('대시보드 새로고침', 'manualRefreshDashboard')
+    .addItem('실시간 라이브 지연 표시 갱신', 'manualRefreshQuickLiveAlerts')
+    .addItem('실시간 라이브 검사 트리거 설치', 'installQuickLiveMonitorTrigger')
     .addItem('편집 트리거 설치', 'installEditTrigger')
     .addItem('처리 메시지 기록 초기화', 'clearProcessedMessageKeys')
     .addToUi();
@@ -150,6 +154,24 @@ function manualRefreshDashboard() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   refreshDashboard_(ss);
   PropertiesService.getScriptProperties().setProperty('LAST_DASHBOARD_REFRESH_MS', String(Date.now()));
+}
+
+function manualRefreshQuickLiveAlerts() {
+  refreshQuickLiveAlerts_(SpreadsheetApp.getActiveSpreadsheet());
+}
+
+function installQuickLiveMonitorTrigger() {
+  ScriptApp.getProjectTriggers()
+    .filter(trigger => trigger.getHandlerFunction() === 'manualRefreshQuickLiveAlerts')
+    .forEach(trigger => ScriptApp.deleteTrigger(trigger));
+
+  ScriptApp.newTrigger('manualRefreshQuickLiveAlerts')
+    .timeBased()
+    .everyMinutes(5)
+    .create();
+
+  manualRefreshQuickLiveAlerts();
+  SpreadsheetApp.getUi().alert('실시간 라이브 지연 검사 트리거를 설치했습니다.');
 }
 
 function installEditTrigger() {
@@ -892,6 +914,94 @@ function refreshDashboard_(ss) {
 
   const tableValues = rows.map(row => [row.label, row.expected || '', row.received || 0, row.status || '', row.arrivedAt || '']);
   dashboardSheet.getRange(2, 4, tableValues.length, 5).setValues(tableValues);
+}
+
+function refreshQuickLiveAlerts_(ss) {
+  const sheet = ss.getSheetByName(SHEETS.SCHEDULE);
+  if (!sheet) return;
+
+  const headers = headerMap_(sheet);
+  const quickColumn = headers['QUICK'];
+  const workDateColumn = headers['작업일'];
+  const programColumn = headers['프로그램'];
+  const startColumn = headers['방송시작시간'];
+  const arrivalColumn = headers['파일입고시간'];
+
+  if (!quickColumn || !workDateColumn || !programColumn || !startColumn) return;
+
+  const startRow = dataStartRow_(sheet);
+  const lastRow = sheet.getLastRow();
+  if (lastRow < startRow) return;
+
+  const now = new Date();
+  const rowCount = lastRow - startRow + 1;
+  const values = sheet.getRange(startRow, 1, rowCount, sheet.getLastColumn()).getValues();
+  const quickBackgrounds = sheet.getRange(startRow, quickColumn, rowCount, 1).getBackgrounds();
+
+  values.forEach((row, index) => {
+    const rowNumber = startRow + index;
+    const quickText = String(row[quickColumn - 1] || '').trim();
+    const quickBackground = String(quickBackgrounds[index][0] || '').toLowerCase();
+    const program = String(row[programColumn - 1] || '').trim();
+    const startAt = combineScheduleDateTime_(row[workDateColumn - 1], row[startColumn - 1]);
+    const arrived = arrivalColumn ? String(row[arrivalColumn - 1] || '').trim() : '';
+    const programCell = sheet.getRange(rowNumber, programColumn);
+
+    if (!program || !isFilledQuickCell_(quickBackground) || quickText || arrived || !startAt) {
+      if (programCell.getBackground().toLowerCase() === QUICK_LIVE_ALERT_COLOR) {
+        programCell.setBackground(null);
+      }
+      return;
+    }
+
+    const alertAt = new Date(startAt.getTime() + QUICK_LIVE_ALERT_AFTER_MINUTES * 60 * 1000);
+    if (now >= alertAt) {
+      programCell.setBackground(QUICK_LIVE_ALERT_COLOR);
+    } else if (programCell.getBackground().toLowerCase() === QUICK_LIVE_ALERT_COLOR) {
+      programCell.setBackground(null);
+    }
+  });
+}
+
+function isFilledQuickCell_(background) {
+  const normalized = String(background || '').toLowerCase();
+  return normalized && !['#ffffff', 'white', '#fff'].includes(normalized);
+}
+
+function combineScheduleDateTime_(workDate, startTime) {
+  if (!workDate || !startTime) return null;
+
+  const date = workDate instanceof Date ? new Date(workDate) : parseScheduleDate_(String(workDate));
+  if (!date) return null;
+
+  let hours = null;
+  let minutes = null;
+  if (startTime instanceof Date) {
+    hours = startTime.getHours();
+    minutes = startTime.getMinutes();
+  } else {
+    const timeMatch = String(startTime).match(/(\d{1,2})\s*:\s*(\d{2})/);
+    if (!timeMatch) return null;
+    hours = Number(timeMatch[1]);
+    minutes = Number(timeMatch[2]);
+  }
+
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+}
+
+function parseScheduleDate_(value) {
+  const trimmed = String(value || '').trim();
+  const full = trimmed.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if (full) return new Date(Number(full[1]), Number(full[2]) - 1, Number(full[3]));
+
+  const short = trimmed.match(/^(\d{1,2})[-/.](\d{1,2})$/);
+  if (short) {
+    const now = new Date();
+    return new Date(now.getFullYear(), Number(short[1]) - 1, Number(short[2]));
+  }
+
+  return null;
 }
 
 function maybeRefreshDashboard_(ss) {
