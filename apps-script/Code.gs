@@ -403,14 +403,10 @@ function matchArrival_(rules, scheduleRows, arrival) {
 
 function pickScheduleMatch_(candidates, episodeNumber) {
   if (!candidates.length) return null;
+  if (!episodeNumber) return null;
 
-  if (episodeNumber) {
-    const episodeMatches = candidates.filter(row => episodeInRange_(episodeNumber, row.episodeText));
-    if (episodeMatches.length === 1) return episodeMatches[0];
-    if (episodeMatches.length > 1) return episodeMatches[0];
-  }
-
-  return candidates.length === 1 ? candidates[0] : null;
+  const episodeMatches = candidates.filter(row => episodeInRange_(episodeNumber, row.episodeText));
+  return episodeMatches.length === 1 ? episodeMatches[0] : null;
 }
 
 function scheduleMatchesRule_(row, rule) {
