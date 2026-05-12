@@ -1,55 +1,20 @@
 {
-  "slideCount": 10,
-  "slides": [
-    {
-      "src": "assets/slides/slide-01.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-02.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-03.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-04.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-05.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-06.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-07.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-08.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-09.png",
-      "width": 1800,
-      "height": 1013
-    },
-    {
-      "src": "assets/slides/slide-10.png",
-      "width": 1800,
-      "height": 1013
-    }
+  "videoCount": 15,
+  "videos": [
+    { "src": "assets/videos/video-01.mp4", "title": "Video 01" },
+    { "src": "assets/videos/video-02.mp4", "title": "Video 02" },
+    { "src": "assets/videos/video-03.mp4", "title": "Video 03" },
+    { "src": "assets/videos/video-04.mp4", "title": "Spreadsheet View" },
+    { "src": "assets/videos/video-05.mp4", "title": "Video 05" },
+    { "src": "assets/videos/video-06.mp4", "title": "Video 06" },
+    { "src": "assets/videos/video-07.mp4", "title": "First Identification" },
+    { "src": "assets/videos/video-08.mp4", "title": "Unique Identification Key" },
+    { "src": "assets/videos/video-09.mp4", "title": "Video 09" },
+    { "src": "assets/videos/video-10.mp4", "title": "Video 10" },
+    { "src": "assets/videos/video-11.mp4", "title": "Video 11" },
+    { "src": "assets/videos/video-12.mp4", "title": "Video 12" },
+    { "src": "assets/videos/video-13.mp4", "title": "Video 13" },
+    { "src": "assets/videos/video-14.mp4", "title": "Video 14" },
+    { "src": "assets/videos/video-15.mp4", "title": "Video 15" }
   ]
 }

@@ -3,27 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>텔레그램 입고 자동화 시스템</title>
+    <title>프로그램 입고 자동화 시스템</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="deck-shell" aria-label="텔레그램 입고 자동화 시스템 발표 슬라이드">
+    <main class="deck-shell" aria-label="프로그램 입고 자동화 시스템 발표 슬라이드">
       <div class="ambient ambient-a"></div>
       <div class="ambient ambient-b"></div>
       <div class="scanline"></div>
 
       <section class="stage" id="stage" aria-live="polite">
         <div class="slide-card is-loading" id="slideCard">
-          <img class="slide-image is-active" id="slideImageA" alt="발표 슬라이드" draggable="false" />
-          <img class="slide-image" id="slideImageB" alt="" draggable="false" />
+          <video class="slide-video is-active" id="slideVideoA" muted playsinline preload="auto"></video>
+          <video class="slide-video" id="slideVideoB" muted playsinline preload="auto"></video>
         </div>
       </section>
 
       <button class="nav-button nav-prev" id="prevButton" type="button" aria-label="이전 슬라이드">
-        <span aria-hidden="true">‹</span>
+        <span aria-hidden="true">&lsaquo;</span>
       </button>
       <button class="nav-button nav-next" id="nextButton" type="button" aria-label="다음 슬라이드">
-        <span aria-hidden="true">›</span>
+        <span aria-hidden="true">&rsaquo;</span>
       </button>
 
       <header class="topbar">
@@ -56,6 +56,6 @@
       </footer>
     </main>
 
-    <script type="module" src="./app.js"></script>
+    <script defer src="./app.js"></script>
   </body>
 </html>
