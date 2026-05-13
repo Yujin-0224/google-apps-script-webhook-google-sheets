@@ -1,5 +1,5 @@
 {
-  "videoCount": 15,
+  "videoCount": 16,
   "videos": [
     { "src": "assets/videos/video-01.mp4", "title": "Video 01" },
     { "src": "assets/videos/video-02.mp4", "title": "Video 02" },
@@ -15,6 +15,7 @@
     { "src": "assets/videos/video-12.mp4", "title": "Video 12" },
     { "src": "assets/videos/video-13.mp4", "title": "Video 13" },
     { "src": "assets/videos/video-14.mp4", "title": "Video 14" },
-    { "src": "assets/videos/video-15.mp4", "title": "Video 15" }
+    { "src": "assets/videos/video-15.mp4", "title": "Video 15" },
+    { "src": "assets/videos/video-16.mp4", "title": "Video 16" }
   ]
 }
