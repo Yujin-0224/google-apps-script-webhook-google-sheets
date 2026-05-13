@@ -16,6 +16,7 @@ const totalSlides = document.querySelector("#totalSlides");
 const progressTrack = document.querySelector("#progressTrack");
 const progressFill = document.querySelector("#progressFill");
 const exampleOverlay = document.querySelector("#exampleOverlay");
+const exampleCardOverlay = document.querySelector("#exampleCardOverlay");
 const exampleModal = document.querySelector("#exampleModal");
 const exampleTitle = document.querySelector("#exampleTitle");
 const exampleClose = document.querySelector("#exampleClose");
@@ -94,6 +95,16 @@ function updateChrome() {
 function hideExampleButtons() {
   exampleOverlay.classList.remove("is-visible");
   exampleOverlay.innerHTML = "";
+  exampleCardOverlay.classList.remove("is-visible");
+  exampleCardOverlay.innerHTML = "";
+}
+
+function hasVisibleExampleButtons() {
+  return exampleOverlay.classList.contains("is-visible") || exampleCardOverlay.classList.contains("is-visible");
+}
+
+function getExampleButtonOverlay() {
+  return index === 9 ? exampleCardOverlay : exampleOverlay;
 }
 
 function openExampleVideo(config) {
@@ -126,16 +137,17 @@ function showExampleButtons() {
     return;
   }
 
-  exampleOverlay.innerHTML = "";
+  const targetOverlay = getExampleButtonOverlay();
+  hideExampleButtons();
   buttonConfigs.forEach((config) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `example-action ${config.className}`;
     button.textContent = config.label;
     button.addEventListener("click", () => openExampleVideo(config));
-    exampleOverlay.append(button);
+    targetOverlay.append(button);
   });
-  exampleOverlay.classList.add("is-visible");
+  targetOverlay.classList.add("is-visible");
 }
 
 function stopVideo(video) {
@@ -218,12 +230,12 @@ async function renderSlide(nextIndex, direction = "next", immediate = false) {
   incoming.src = normalizeSrc(current.src);
   incoming.setAttribute("aria-label", current.title || `발표 영상 ${index + 1}`);
   incoming.onended = () => {
-    if (videos[activeLayer] === incoming && !exampleOverlay.classList.contains("is-visible")) {
+    if (videos[activeLayer] === incoming && !hasVisibleExampleButtons()) {
       showExampleButtons();
     }
   };
   incoming.ontimeupdate = () => {
-    if (videos[activeLayer] !== incoming || exampleOverlay.classList.contains("is-visible")) {
+    if (videos[activeLayer] !== incoming || hasVisibleExampleButtons()) {
       return;
     }
     if (incoming.currentTime >= 1) {

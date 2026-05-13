@@ -220,15 +220,18 @@ button {
 }
 
 .example-overlay {
-  --slide-w: min(calc(100vw - 208px), calc((100vh - 164px) * 16 / 9));
-  --slide-h: calc(var(--slide-w) * 9 / 16);
-  --slide-x: calc((100vw - var(--slide-w)) / 2);
-  --slide-y: calc(70px + ((100vh - 148px) - var(--slide-h)) / 2);
   position: absolute;
   inset: 0;
-  z-index: 32;
   display: none;
   pointer-events: none;
+}
+
+.example-card-overlay {
+  z-index: 12;
+}
+
+#exampleOverlay {
+  z-index: 32;
 }
 
 .example-overlay.is-visible {
@@ -282,7 +285,7 @@ button {
 }
 
 .case-button {
-  top: calc(var(--slide-y) + var(--slide-h) * 0.43);
+  top: 43%;
   min-width: 112px;
   height: 34px;
   font-size: 13px;
@@ -291,15 +294,15 @@ button {
 }
 
 .case-button-01 {
-  left: calc(var(--slide-x) + var(--slide-w) * 0.162);
+  left: 16.2%;
 }
 
 .case-button-02 {
-  left: calc(var(--slide-x) + var(--slide-w) * 0.333);
+  left: 33.3%;
 }
 
 .case-button-03 {
-  left: calc(var(--slide-x) + var(--slide-w) * 0.504);
+  left: 50.4%;
   display: none;
 }
 
