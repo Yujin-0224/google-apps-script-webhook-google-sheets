@@ -220,9 +220,13 @@ button {
 }
 
 .example-overlay {
+  --slide-w: min(calc(100vw - 208px), calc((100vh - 164px) * 16 / 9));
+  --slide-h: calc(var(--slide-w) * 9 / 16);
+  --slide-x: calc((100vw - var(--slide-w)) / 2);
+  --slide-y: calc(70px + ((100vh - 148px) - var(--slide-h)) / 2);
   position: absolute;
   inset: 0;
-  z-index: 12;
+  z-index: 32;
   display: none;
   pointer-events: none;
 }
@@ -264,31 +268,39 @@ button {
 }
 
 .example-button-page-09 {
+  position: absolute;
   left: 50%;
-  top: 88%;
+  top: auto;
+  bottom: 58px;
   min-width: 188px;
   height: 48px;
   padding: 0 24px;
   font-size: 16px;
+  z-index: 35;
+  transform: translateX(-50%);
+  animation-name: exampleBottomButtonIn;
 }
 
 .case-button {
-  top: 43%;
+  top: calc(var(--slide-y) + var(--slide-h) * 0.43);
   min-width: 112px;
   height: 34px;
   font-size: 13px;
+  transform: translate(-50%, calc(-50% + 10px)) scale(0.98);
+  animation-name: exampleButtonIn;
 }
 
 .case-button-01 {
-  left: 16.2%;
+  left: calc(var(--slide-x) + var(--slide-w) * 0.162);
 }
 
 .case-button-02 {
-  left: 33.3%;
+  left: calc(var(--slide-x) + var(--slide-w) * 0.333);
 }
 
 .case-button-03 {
-  left: 50.4%;
+  left: calc(var(--slide-x) + var(--slide-w) * 0.504);
+  display: none;
 }
 
 .case-button-04 {
@@ -300,12 +312,17 @@ button {
 }
 
 .example-button-page-11 {
+  position: absolute;
   left: 50%;
-  top: 88%;
+  top: auto;
+  bottom: 58px;
   min-width: 218px;
   height: 48px;
   padding: 0 24px;
   font-size: 16px;
+  z-index: 35;
+  transform: translateX(-50%);
+  animation-name: exampleBottomButtonIn;
 }
 
 .example-modal {
@@ -537,6 +554,23 @@ button {
   to {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes exampleBottomButtonIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px) scale(0.96);
+    filter: blur(2px);
+  }
+  70% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
     filter: blur(0);
   }
 }

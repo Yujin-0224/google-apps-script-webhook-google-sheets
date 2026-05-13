@@ -32,20 +32,17 @@ const exampleButtonGroups = {
   ],
   9: [
     {
-      label: "Case 1 예시",
+      label: "예시 영상 보기",
       title: "프로그램명 불일치",
       className: "case-button case-button-01",
       src: "assets/examples/case-01-example.mp4",
     },
     {
-      label: "Case 2 예시",
+      label: "예시 영상 보기",
       title: "회차 정보 누락",
       className: "case-button case-button-02",
       src: "assets/examples/case-02-episode-error-example.mp4",
     },
-    { label: "Case 3 예시", title: "중복 메시지", className: "case-button case-button-03" },
-    { label: "Case 4 예시", title: "파일 수 불일치", className: "case-button case-button-04" },
-    { label: "Case 5 예시", title: "비정상 패턴", className: "case-button case-button-05" },
   ],
   10: [
     {
@@ -229,7 +226,7 @@ async function renderSlide(nextIndex, direction = "next", immediate = false) {
     if (videos[activeLayer] !== incoming || exampleOverlay.classList.contains("is-visible")) {
       return;
     }
-    if (Number.isFinite(incoming.duration) && incoming.duration - incoming.currentTime <= 3) {
+    if (incoming.currentTime >= 1) {
       showExampleButtons();
     }
   };
