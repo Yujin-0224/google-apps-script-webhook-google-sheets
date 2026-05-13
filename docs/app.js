@@ -15,6 +15,47 @@ const currentSlide = document.querySelector("#currentSlide");
 const totalSlides = document.querySelector("#totalSlides");
 const progressTrack = document.querySelector("#progressTrack");
 const progressFill = document.querySelector("#progressFill");
+const exampleOverlay = document.querySelector("#exampleOverlay");
+const exampleModal = document.querySelector("#exampleModal");
+const exampleTitle = document.querySelector("#exampleTitle");
+const exampleClose = document.querySelector("#exampleClose");
+const examplePlayer = document.querySelector("#examplePlayer");
+
+const exampleButtonGroups = {
+  8: [
+    {
+      label: "정상 작동 예시 보기",
+      title: "정상 작동 예시",
+      className: "example-button-page-09",
+      src: "assets/examples/normal-operation-example.mp4",
+    },
+  ],
+  9: [
+    {
+      label: "Case 1 예시",
+      title: "프로그램명 불일치",
+      className: "case-button case-button-01",
+      src: "assets/examples/case-01-example.mp4",
+    },
+    {
+      label: "Case 2 예시",
+      title: "회차 정보 누락",
+      className: "case-button case-button-02",
+      src: "assets/examples/case-02-episode-error-example.mp4",
+    },
+    { label: "Case 3 예시", title: "중복 메시지", className: "case-button case-button-03" },
+    { label: "Case 4 예시", title: "파일 수 불일치", className: "case-button case-button-04" },
+    { label: "Case 5 예시", title: "비정상 패턴", className: "case-button case-button-05" },
+  ],
+  10: [
+    {
+      label: "R.QUICK 누락 알람 예시",
+      title: "R.QUICK 누락 알람",
+      className: "example-button-page-11",
+      src: "assets/examples/quick-alert-example.mp4",
+    },
+  ],
+};
 
 let slides = fallbackVideos;
 let index = 0;
@@ -53,8 +94,57 @@ function updateChrome() {
   nextButton.disabled = index === slides.length - 1;
 }
 
+function hideExampleButtons() {
+  exampleOverlay.classList.remove("is-visible");
+  exampleOverlay.innerHTML = "";
+}
+
+function openExampleVideo(config) {
+  const source = config.src || slides[index].src;
+  exampleTitle.textContent = config.title;
+  videos[activeLayer].pause();
+  examplePlayer.pause();
+  examplePlayer.src = normalizeSrc(source);
+  examplePlayer.load();
+  exampleModal.classList.add("is-visible");
+  exampleModal.setAttribute("aria-hidden", "false");
+  examplePlayer.currentTime = 0;
+  examplePlayer.play().catch((error) => {
+    console.warn("Example video playback was blocked:", error);
+  });
+}
+
+function closeExampleVideo() {
+  examplePlayer.pause();
+  examplePlayer.removeAttribute("src");
+  examplePlayer.load();
+  exampleModal.classList.remove("is-visible");
+  exampleModal.setAttribute("aria-hidden", "true");
+}
+
+function showExampleButtons() {
+  const buttonConfigs = exampleButtonGroups[index];
+  if (!buttonConfigs) {
+    hideExampleButtons();
+    return;
+  }
+
+  exampleOverlay.innerHTML = "";
+  buttonConfigs.forEach((config) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `example-action ${config.className}`;
+    button.textContent = config.label;
+    button.addEventListener("click", () => openExampleVideo(config));
+    exampleOverlay.append(button);
+  });
+  exampleOverlay.classList.add("is-visible");
+}
+
 function stopVideo(video) {
   video.pause();
+  video.onended = null;
+  video.ontimeupdate = null;
   video.removeAttribute("src");
   video.load();
 }
@@ -116,6 +206,8 @@ async function renderSlide(nextIndex, direction = "next", immediate = false) {
   const previousIndex = index;
   index = nextIndex;
   updateChrome();
+  hideExampleButtons();
+  closeExampleVideo();
 
   const incomingLayer = immediate ? activeLayer : 1 - activeLayer;
   const outgoingLayer = activeLayer;
@@ -128,6 +220,19 @@ async function renderSlide(nextIndex, direction = "next", immediate = false) {
   incoming.playsInline = true;
   incoming.src = normalizeSrc(current.src);
   incoming.setAttribute("aria-label", current.title || `발표 영상 ${index + 1}`);
+  incoming.onended = () => {
+    if (videos[activeLayer] === incoming && !exampleOverlay.classList.contains("is-visible")) {
+      showExampleButtons();
+    }
+  };
+  incoming.ontimeupdate = () => {
+    if (videos[activeLayer] !== incoming || exampleOverlay.classList.contains("is-visible")) {
+      return;
+    }
+    if (Number.isFinite(incoming.duration) && incoming.duration - incoming.currentTime <= 3) {
+      showExampleButtons();
+    }
+  };
   incoming.load();
 
   await waitForVideoReady(incoming);
@@ -232,6 +337,11 @@ document.addEventListener("fullscreenchange", () => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && exampleModal.classList.contains("is-visible")) {
+    closeExampleVideo();
+    return;
+  }
+
   if (event.target === progressTrack) {
     return;
   }
@@ -254,6 +364,13 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "End") {
     event.preventDefault();
     goTo(slides.length - 1, "next");
+  }
+});
+
+exampleClose.addEventListener("click", closeExampleVideo);
+exampleModal.addEventListener("click", (event) => {
+  if (event.target === exampleModal) {
+    closeExampleVideo();
   }
 });
 
@@ -280,6 +397,7 @@ document.addEventListener("visibilitychange", () => {
     renderSlide(index, "next", true);
     return;
   }
+  closeExampleVideo();
   videos[activeLayer].pause();
 });
 

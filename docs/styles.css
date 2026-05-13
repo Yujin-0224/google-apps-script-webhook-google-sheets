@@ -219,6 +219,162 @@ button {
   animation: imageInPrev 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.example-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: none;
+  pointer-events: none;
+}
+
+.example-overlay.is-visible {
+  display: block;
+}
+
+.example-action {
+  position: absolute;
+  min-width: 128px;
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid rgba(125, 172, 232, 0.46);
+  border-radius: 999px;
+  color: #dcecff;
+  font: 750 14px/1 "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  letter-spacing: 0;
+  background:
+    linear-gradient(135deg, rgba(38, 76, 130, 0.78), rgba(29, 55, 88, 0.76)),
+    rgba(9, 20, 34, 0.78);
+  box-shadow:
+    0 10px 24px rgba(8, 16, 28, 0.3),
+    0 0 0 4px rgba(92, 146, 211, 0.08);
+  cursor: pointer;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translate(-50%, calc(-50% + 10px)) scale(0.98);
+  animation: exampleButtonIn 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+
+.example-action:hover {
+  filter: brightness(1.08);
+  transform: translate(-50%, -50%) scale(1.04);
+  box-shadow:
+    0 14px 32px rgba(8, 16, 28, 0.38),
+    0 0 0 5px rgba(92, 146, 211, 0.12);
+}
+
+.example-button-page-09 {
+  left: 50%;
+  top: 88%;
+  min-width: 188px;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 16px;
+}
+
+.case-button {
+  top: 43%;
+  min-width: 112px;
+  height: 34px;
+  font-size: 13px;
+}
+
+.case-button-01 {
+  left: 16.2%;
+}
+
+.case-button-02 {
+  left: 33.3%;
+}
+
+.case-button-03 {
+  left: 50.4%;
+}
+
+.case-button-04 {
+  left: 67.6%;
+}
+
+.case-button-05 {
+  left: 84.7%;
+}
+
+.example-button-page-11 {
+  left: 50%;
+  top: 88%;
+  min-width: 218px;
+  height: 48px;
+  padding: 0 24px;
+  font-size: 16px;
+}
+
+.example-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  place-items: center;
+  padding: 32px;
+  background: rgba(2, 8, 17, 0.76);
+  backdrop-filter: blur(10px);
+}
+
+.example-modal.is-visible {
+  display: grid;
+}
+
+.example-dialog {
+  width: min(1180px, 92vw);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  overflow: hidden;
+  background: #07111f;
+  box-shadow: 0 34px 120px rgba(0, 0, 0, 0.58);
+}
+
+.example-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+  padding: 0 14px 0 22px;
+  color: #f4f8ff;
+  background: rgba(12, 25, 43, 0.96);
+}
+
+.example-close {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(190, 211, 238, 0.22);
+  border-radius: 10px;
+  color: #d8e6f7;
+  font: 600 24px/1 Arial, sans-serif;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.example-close:hover {
+  color: #ffffff;
+  border-color: rgba(218, 235, 255, 0.38);
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.example-close:focus-visible {
+  outline: 2px solid rgba(112, 181, 255, 0.82);
+  outline-offset: 2px;
+}
+
+.example-player {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #020812;
+}
+
 .nav-button {
   position: absolute;
   top: 50%;
@@ -365,6 +521,23 @@ button {
   }
   to {
     background-position: 220% 0, 0 0;
+  }
+}
+
+@keyframes exampleButtonIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 12px)) scale(0.96);
+    filter: blur(2px);
+  }
+  70% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
   }
 }
 

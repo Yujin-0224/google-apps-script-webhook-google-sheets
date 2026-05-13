@@ -42,6 +42,7 @@ function doPost(e) {
 
     arrival.chatTitle = getChatTitle_(message.chat);
     arrival.messageId = String(message.message_id || '');
+    arrival.occurredAt = telegramMessageDate_(message) || arrival.occurredAt || new Date();
 
     const result = processArrival_(arrival);
     markProcessedMessage_(messageKey);
@@ -243,8 +244,6 @@ function processArrival_(arrival) {
       reason: status,
       guessedKeyword: match.rule ? match.rule.keyword : guessKeyword_(arrival),
     });
-    groupReviewRows_(reviewSheet);
-    setupReviewSheet();
     maybeRefreshDashboard_(ss);
     return `${status}: ${arrival.filename || arrival.path}`;
   }
@@ -252,8 +251,29 @@ function processArrival_(arrival) {
   const target = match.scheduleRow;
   const previous = existingArrivals_(logSheet, target.arrivalKey);
   const duplicate = Object.prototype.hasOwnProperty.call(previous, arrival.filename);
-  if (duplicate) {
-    return `${target.arrivalKey}: duplicate skipped ${arrival.filename}`;
+  const alreadyComplete = scheduleAlreadyComplete_(scheduleSheet, target, previous);
+  if (duplicate || alreadyComplete) {
+    appendLog_(logSheet, arrival, {
+      arrivalKey: target.arrivalKey,
+      matchStatus: '중복',
+      matchMethod: match.method,
+      ruleKeyword: match.rule ? match.rule.keyword : '',
+      program: target.program,
+      episodeText: target.episodeText,
+      duplicate: true,
+    });
+    appendReview_(reviewSheet, arrival, {
+      reason: '중복',
+      guessedKeyword: target.program,
+      selectedScheduleLabel: scheduleSelectionLabel_(target),
+      reviewStatus: '중복',
+      memo: duplicate
+        ? `중복: 이미 반영된 파일명입니다. (${arrival.filename})`
+        : `중복: ${target.program} ${target.episodeText} 입고가 이미 완료된 상태입니다.`,
+      background: '#fce5cd',
+    });
+    maybeRefreshDashboard_(ss);
+    return `${target.arrivalKey}: duplicate sent to review ${arrival.filename}`;
   }
 
   appendLog_(logSheet, arrival, {
@@ -287,6 +307,12 @@ function parseArrival_(text) {
     occurredAt: occurredAtText ? parseKoreanDateTime_(occurredAtText) : new Date(),
     rawText: text,
   };
+}
+
+function telegramMessageDate_(message) {
+  const unixSeconds = Number(message && message.date);
+  if (!Number.isFinite(unixSeconds) || unixSeconds <= 0) return null;
+  return new Date(unixSeconds * 1000);
 }
 
 function firstLineValue_(text, labels) {
@@ -464,7 +490,17 @@ function existingArrivals_(sheet, arrivalKey) {
   const arrivals = {};
   if (lastRow < DATA_START_ROW) return arrivals;
 
-  const values = sheet.getRange(DATA_START_ROW, 1, lastRow - DATA_START_ROW + 1, sheet.getLastColumn()).getValues();
+  const rowCount = lastRow - DATA_START_ROW + 1;
+  const keyValues = sheet.getRange(DATA_START_ROW, headers['입고키'], rowCount, 1).getValues();
+  const relevantRows = [];
+  keyValues.forEach((row, index) => {
+    if (row[0] === arrivalKey) relevantRows.push(DATA_START_ROW + index);
+  });
+  if (!relevantRows.length) return arrivals;
+
+  const minRow = Math.min.apply(null, relevantRows);
+  const maxRow = Math.max.apply(null, relevantRows);
+  const values = sheet.getRange(minRow, 1, maxRow - minRow + 1, sheet.getLastColumn()).getValues();
   values.forEach(row => {
     const key = row[headers['입고키'] - 1];
     const filename = row[headers['파일명'] - 1];
@@ -476,6 +512,24 @@ function existingArrivals_(sheet, arrivalKey) {
   });
 
   return arrivals;
+}
+
+function scheduleAlreadyComplete_(sheet, target, previousArrivals) {
+  const headers = headerMap_(sheet);
+  const rowValues = sheet.getRange(target.rowNumber, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const statusColumn = headers['상태'];
+  const arrivalTimeColumn = headers['파일입고시간'];
+  const receivedCountColumn = headers['입고파일수'];
+
+  const status = statusColumn ? String(rowValues[statusColumn - 1] || '').trim() : '';
+  const arrivalTime = arrivalTimeColumn ? String(rowValues[arrivalTimeColumn - 1] || '').trim() : '';
+  const receivedCount = receivedCountColumn
+    ? Number(rowValues[receivedCountColumn - 1] || 0)
+    : Object.keys(previousArrivals || {}).length;
+
+  if (status === '완료') return true;
+  if (arrivalTime) return true;
+  return Boolean(target.expectedKnown && receivedCount >= target.expectedCount);
 }
 
 function existingArrivalsByKey_(sheet) {
@@ -542,14 +596,17 @@ function appendReview_(sheet, arrival, options) {
   values[headers['파일명'] - 1] = arrival.filename || '';
   values[headers['경로'] - 1] = arrival.path || '';
   values[headers['발생시간'] - 1] = arrival.occurredAt || '';
-  values[headers['편성표선택'] - 1] = '';
-  values[headers['처리상태'] - 1] = '대기';
-  values[headers['메모'] - 1] = '';
+  values[headers['편성표선택'] - 1] = options.selectedScheduleLabel || '';
+  values[headers['처리상태'] - 1] = options.reviewStatus || '대기';
+  values[headers['메모'] - 1] = options.memo || '';
   values[headers['그룹키'] - 1] = normalizeSearch_(telegramName || options.guessedKeyword || arrival.path);
   values[headers['원문'] - 1] = arrival.rawText || '';
 
   sheet.getRange(row, 1, 1, values.length).setValues([values]);
   if (arrival.occurredAt) sheet.getRange(row, headers['발생시간']).setNumberFormat(TIME_FORMAT);
+  if (options.background) {
+    sheet.getRange(row, 1, 1, values.length).setBackground(options.background);
+  }
 }
 
 function applyReviewSelection_(reviewRowNumber, selectedLabel) {
@@ -661,7 +718,7 @@ function reviewRowToArrival_(rowValues, headers) {
   return {
     filename: String(rowValues[headers['파일명'] - 1] || (parsed && parsed.filename) || '').trim(),
     path: String(rowValues[headers['경로'] - 1] || (parsed && parsed.path) || '').trim(),
-    occurredAt: parsed && parsed.occurredAt ? parsed.occurredAt : occurredAt,
+    occurredAt: occurredAt || (parsed && parsed.occurredAt) || new Date(),
     rawText,
     chatTitle: '미매칭검수',
     messageId: `review-${new Date().getTime()}`,
@@ -878,6 +935,8 @@ function decideStatus_(receivedCount, expectedCount, expectedKnown) {
 
 function refreshDashboard_(ss) {
   const dashboardSheet = ss.getSheetByName(SHEETS.DASHBOARD);
+  if (!dashboardSheet) return;
+
   const scheduleRows = readSchedule_(ss.getSheetByName(SHEETS.SCHEDULE));
   const scheduleSheet = ss.getSheetByName(SHEETS.SCHEDULE);
   const logSheet = ss.getSheetByName(SHEETS.LOG);

@@ -16,6 +16,7 @@
         <div class="slide-card is-loading" id="slideCard">
           <video class="slide-video is-active" id="slideVideoA" muted playsinline preload="auto"></video>
           <video class="slide-video" id="slideVideoB" muted playsinline preload="auto"></video>
+          <div class="example-overlay" id="exampleOverlay" aria-label="예시 영상 버튼"></div>
         </div>
       </section>
 
@@ -38,7 +39,7 @@
         <div class="counter">
           <strong id="currentSlide">01</strong>
           <span>/</span>
-          <span id="totalSlides">10</span>
+          <span id="totalSlides">15</span>
         </div>
         <div
           class="progress-track"
@@ -46,7 +47,7 @@
           role="slider"
           aria-label="슬라이드 위치"
           aria-valuemin="1"
-          aria-valuemax="10"
+          aria-valuemax="15"
           aria-valuenow="1"
           tabindex="0"
         >
@@ -54,6 +55,16 @@
         </div>
         <div class="hint">← → / Space</div>
       </footer>
+
+      <div class="example-modal" id="exampleModal" aria-hidden="true">
+        <div class="example-dialog" role="dialog" aria-modal="true" aria-labelledby="exampleTitle">
+          <div class="example-dialog-header">
+            <strong id="exampleTitle">예시 영상</strong>
+            <button class="example-close" id="exampleClose" type="button" aria-label="예시 영상 닫기">&times;</button>
+          </div>
+          <video class="example-player" id="examplePlayer" controls playsinline preload="metadata"></video>
+        </div>
+      </div>
     </main>
 
     <script defer src="./app.js"></script>
