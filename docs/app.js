@@ -47,7 +47,7 @@ const exampleButtonGroups = {
   ],
   10: [
     {
-      label: "R.QUICK 누락 알람 예시",
+      label: "R.QUICK 누락 알람 예시 보기",
       title: "R.QUICK 누락 알람",
       className: "example-button-page-11",
       src: "assets/examples/quick-alert-example.mp4",
