@@ -69,9 +69,9 @@ Telegram
 
 회사에 자동화 시스템의 필요성과 처리 흐름을 설명하기 위해, GitHub Pages를 통해 PPT 형식의 웹 기획서를 구현했습니다.
 
-```text
+
 https://yujin-0224.github.io/google-apps-script-webhook-google-sheets/
-```
+
 
 로컬에서 확인할 때는 아래 명령어를 사용할 수 있습니다.
 
